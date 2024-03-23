@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>音を再生する</title>
+  <style>
+    body{
+      font-family:"Quicksand", "M PLUS Rounded 1c", "Hiragino Maru Gothic Pro", "Meiryo UI", Meiryo, "MS PGothic", sans-serif;;
+      background-color:rgb(145, 182, 205);
+      background-size: cover;
+      background-repeat: no-repeat; 
+      color:dimgray;
+    }
+    .page-title {
+      background-image: url(https://cdn-ak.f.st-hatena.com/images/fotolife/z/zuuushiii/20240320/20240320125547.jpg);
+      background-size: cover;
+      text-align: center;
+      padding-top:80px;
+      padding-bottom:80px;
+      color:white;
+    }
+    .audio-list{
+      padding-bottom: 50px;
+      margin: auto 30px;
+    }
+    audioItem{
+      float:left;
+    }
+    .container {
+      padding-top: 100px;
+      padding-left: 100px;
+    }
+
+    .btn {
+      position: fixed;
+      bottom: 40px;
+      left: 1000px;
+    }
+
+    .btn .back {
+      font-size: 20px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background-color: orange;
+      color: aliceblue;
+    }
+    .back:active {
+      box-shadow:none;
+      position:relative;
+      top:7px;
+    }
+    .back:hover {
+      background-color: chocolate;
+    }
+    .btn .next {
+      font-size: 20px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      background-color: #66cdaa;
+      color: aliceblue;
+    }
+    .next:active {
+      box-shadow:none;
+      position:relative;
+      top:7px;
+    }
+    .next:hover {
+      background-color: teal;
+    }
+
+    /* 自由記述欄のスタイル */
+    textarea {
+      width: 300px;
+      height: 30px;
+      resize: vertical; /* テキストエリアの縦方向のリサイズを許可 */
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: inherit;
+      font-size: 13px;
+      margin: auto 30px;
+    }
+
+
+    .list {
+      height: 60px;
+    }
+
+
+    
+  </style>
+  <!-- <script src="path/to/dayjs/dayjs.min.js"></script> -->
+</head>
+<body>
+  <div class="page-title">
+    <h1>音を再生する</h1>
+  </div>
+  <div class="container">
+    <div class="list">
+      <div class="audio-list" id="audio-list">
+        <!-- 音声ファイルを表示するためのリスト -->
+      </div>
+
+    </div>
+    
+
+    <div class="btn">
+      <button class="back" onclick="goToPostPage()">音を投稿</button>
+      <button class="next" onclick="goToMusicPage()">思い出で音楽を作る</button>
+    </div>
+  </div>
+
+  <script>
+    // ローカルストレージから音声ファイルを取得して再生する処理を実装する
+    let recordings = JSON.parse(localStorage.getItem('recordings')) || [];
+    const audioList = document.getElementById('audio-list');
+
+    recordings.forEach((recording, index) => {
+     // const audioFile = recording.audioFile;
+     // const bgmSelection = recording.bgmSelection;
+     // const date = recording.date;
+
+      //const audioElement = document.createElement('audio');
+      //audioElement.src = audioFile;
+      //audioElement.controls = true;
+
+      // 各音声ファイルの要素にテキストエリアやインプットフィールドを追加する
+      //const audioItem = document.createElement('div');
+     
+     // audioItem.appendChild(audioElement);
+
+      //audioList.appendChild(audioItem);
+
+    // 削除ボタンを作成する
+    const deleteButton = document.createElement('button');
+      deleteButton.textContent = '削除';
+      deleteButton.onclick = function() {
+      // localStorageとリストから要素を削除する関数
+      deleteRecording(index);
+      };
+      // 削除ボタンをaudioItemに追加する
+      audioItem.appendChild(deleteButton);
+  
+    });
+
+    function deleteRecording(index) {
+      // localStorageから削除する
+      recordings.splice(index, 1);
+      localStorage.setItem('recordings', JSON.stringify(recordings));
+    
+      // DOMから削除する
+      const audioItems = audioList.getElementsByTagName('div');
+      audioList.removeChild(audioItems[index]);
+    }
+
+
+    function goToPostPage() {
+      location.href = 'index.html'; // 音声投稿ページのURLを指定
+    }
+    function goToMusicPage() {
+      location.href = 'myMusic.html'; 
+    }
+
+
+
+
+    const prefix = 'mikan_savedAudioFile_'
+    const savedAudioFiles = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith(prefix)) {
+        const value = localStorage.getItem(key);
+        savedAudioFiles.push({ audioFile: value, date: key.substr(prefix.length), localStorageKey: key });
+      }
+    }
+
+    // sort 新しい順に並び替え
+    savedAudioFiles.sort((a, b) => {
+      return new Date(b.date) - new Date(a.date);
+    });
+
+    // 日付を変換
+    const formattedDates = savedAudioFiles.map(object => {
+      const d = new Date(object.date);
+      return {
+        ...object,
+        date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+      }
+    });
+
+    // console.log(formattedDates);
+    for (const savedAudioFile of formattedDates) {
+      if (savedAudioFile.audioFile) {
+        // `<audio>`タグの`src`属性にDataURLを設定して再生
+        const div = document.createElement('div');
+        const audioPlayer = document.createElement('audio');
+        audioPlayer.src = savedAudioFile.audioFile;
+        audioPlayer.controls = true; // コントロールを表示
+        
+
+        const dateElement = document.createElement('p');
+        dateElement.textContent = `Date: ${savedAudioFile.date}`;
+
+        const descriptionTextArea = document.createElement('textarea');
+        descriptionTextArea.placeholder = '自由記述欄';
+
+        // ローカルストレージから保存された記述内容を取得し、表示する
+        const savedDescription = localStorage.getItem(`description-${savedAudioFile.date}`);
+        if (savedDescription) {
+          descriptionTextArea.value = savedDescription;
+        }
+
+        // 記述内容が変更された際にローカルストレージに保存する
+        descriptionTextArea.addEventListener('input', function() {
+          localStorage.setItem(`description-${savedAudioFile.date}`, descriptionTextArea.value);
+        });
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '削除';
+        deleteButton.onclick = function() {
+          localStorage.removeItem(savedAudioFile.localStorageKey); // キーを使用してローカルストレージから削除
+          div.remove(); // DOMから削除
+        };
+        
+        div.appendChild(dateElement);
+        div.appendChild(audioPlayer);
+        div.appendChild(descriptionTextArea);
+        div.appendChild(deleteButton);
+        
+
+        
+
+        const listContainer = document.getElementById('audio-list');
+        listContainer.appendChild(div); // ページに追加
+
+      
+      } else {
+        console.log('No audio file found in localStorage');
+      }
+    }
+
+
+  </script>
+</body>
+</html>

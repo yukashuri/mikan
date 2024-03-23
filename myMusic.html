@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>思い出の音楽再生ページ</title>
+  <style>
+    body{
+      font-family:"Quicksand", "M PLUS Rounded 1c", "Hiragino Maru Gothic Pro", "Meiryo UI", Meiryo, "MS PGothic", sans-serif;;
+      background-image:url(https://cdn-ak.f.st-hatena.com/images/fotolife/z/zuuushiii/20240320/20240320125547.jpg);
+      background-size: cover;
+      background-repeat: no-repeat; 
+    }
+    .top-wrapper{
+      padding-top:180px;
+      padding-bottom:100px;
+      
+    }
+    .top-wrapper h1{
+      text-align: center;
+      color:white;
+    }
+    
+    button{
+      padding:8px 24px; 
+      border-radius: 10px;
+      /* opacity:0.8; */
+      /* margin-right:10px; */
+      float:left;
+      color: aliceblue;
+    }
+    .btn{
+      position: fixed;
+      bottom: 40px;
+      right: 100px;
+    }
+
+
+    .start {
+      background-color: orange;
+      font-size: 20px;
+      margin-right: 20px;
+    }
+    .start:hover{
+      background-color:chocolate;
+    }
+    .start:active{
+      position:relative;
+      top:6px;
+      box-shadow:none;
+    }
+    .back{
+      background-color:#66cdaa;
+      font-size: 20px;
+    }
+    .back:hover{
+      background-color:teal;
+    }
+    .back:active{
+      position:relative;
+      top:6px;
+      box-shadow:none;
+    }
+    
+    .audioItem{
+      padding:20px;
+      margin:50px 250px;
+      background-color: rgb(240, 255, 255,0.5);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="top-wrapper">
+  <h1>思い出の音楽再生ページ</h1>
+  </div>
+  <div class="audioItem">
+    <div id="audio-list">
+      <!-- 音声ファイルを表示するためのリスト -->
+      <h3>あなたの音</h3>
+    </div>
+    <h3>BGM</h3>
+    <audio id="bgmAudio" controls></audio>
+  </div>
+  
+  <script>
+    const recordedAudio = document.getElementById('recordedAudio');
+    const bgmAudio = document.getElementById('bgmAudio');
+    //const savedAudioFile = localStorage.getItem('mikan_savedAudioFile_');
+
+    // 録音した音声ファイルとBGMを設定
+    
+    bgmAudio.src = './bgm_aozora.mp3'; // 選択したBGMファイルのパスを指定
+    
+    
+    // 再生ボタンをクリックした時の処理
+    function playAudio() {
+      // recordedAudio.play(); // 録音した音声を再生
+      bgmAudio.play(); // 選択したBGMを再生
+
+      // 順番に再生する
+      const audios = document.querySelectorAll('.audio-player');
+      console.log(audios)
+      audios.forEach((audio, index) => {
+        audio.addEventListener('ended', () => {
+          audios[index + 1]?.play();
+        })
+      });
+      audios[0]?.play();
+    }
+    const prefix = 'mikan_savedAudioFile_'
+    const savedAudioFiles = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key.startsWith(prefix)) {
+        const value = localStorage.getItem(key);
+        //savedAudioFiles.push(value);
+        savedAudioFiles.push({ audioFile: value, date: key.substr(prefix.length) });
+      }
+    }
+
+    // sort 新しい順に並び替え
+    savedAudioFiles.sort((a, b) => {
+      return new Date(b.date) - new Date(a.date);
+    });
+
+    // 日付を変換
+    const formattedDates = savedAudioFiles.map(object => {
+      const d = new Date(object.date);
+      return {
+        ...object,
+        date: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+      }
+    });
+
+    for (const savedAudioFile of formattedDates) {
+      if (savedAudioFile) {
+        // `<audio>`タグの`src`属性にDataURLを設定して再生
+        const div = document.createElement('div');
+        const audioPlayer = document.createElement('audio');
+        audioPlayer.src = savedAudioFile.audioFile;
+        audioPlayer.controls = true; // コントロールを表示
+        audioPlayer.classList.add('audio-player');
+
+        const dateElement = document.createElement('p');//日付追加するために変えた場所
+        dateElement.textContent = `Date: ${savedAudioFile.date}`;
+        div.appendChild(dateElement);
+
+        div.appendChild(audioPlayer);//音再生
+
+        const listContainer = document.getElementById('audio-list');
+        listContainer.appendChild(div); // ページに追加
+      } else {
+        console.log('No audio file found in localStorage');
+      }
+    }
+
+  </script>
+  <div class="btn">
+    
+      <button class="start" onclick="playAudio()">音楽再生開始</button>
+   
+      <button class="back" onclick="goToMusicPage()">記録ページに戻る</button>
+    </div>
+  </div>
+  <script>
+    function goToMusicPage() {
+        location.href = 'playback.html'; 
+    }
+  </script>
+</body>
+</html>

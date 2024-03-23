@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>First Page</title>
+        <style>
+        body {
+            font-family: "Quicksand", "M PLUS Rounded 1c", "Hiragino Maru Gothic Pro", "Meiryo UI", Meiryo, "MS PGothic", sans-serif;
+            background-image: url(https://cdn-ak.f.st-hatena.com/images/fotolife/z/zuuushiii/20240320/20240320125547.jpg);
+            background-size: cover;
+            background-repeat: no-repeat; 
+        }
+        h1 {
+            text-align: center;
+            font-size: 90px;
+            color: rgb(253, 253, 253);
+        }
+        .explanation {
+            text-align: center;
+            font-size: 30px;
+            background-color: rgb(240, 255, 255,0.5);
+            color: rgb(38, 109, 171,0.8);
+            padding: 15px 20px 15px 20px;
+            }
+        .explanation span {
+            color: black;
+        }
+        .button {
+            text-align: center;
+        }
+        button {
+            font-size: 25px;
+            margin-top: 40px;
+            padding: 20px 40px ;
+            border-radius: 20px;
+            background-color: rgb(38, 109, 171);
+            color: aliceblue;
+        }
+        button:active {
+            box-shadow:none;
+            position:relative;
+            top:7px;
+        }
+        button:hover {
+            background-color: rgb(38, 109, 171,0.8);
+        }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>音日記</h1>
+        </header>
+        <main>
+            <div class="explanation">
+                <p>音日記とは</p>
+                <p><span>「記憶」</span>として残っている景色と<span>「記録」</span>として残っている景色のギャップ</p>
+                <p>を埋めるもの</p>
+            </div>
+            
+            
+        </main>
+        <div class="button">
+            <button onclick="goToPostPage()">音日記をはじめる</button>
+        </div>
+        <script>
+            function goToPostPage() {
+            location.href = 'index.html'; // 音声投稿ページのURLを指定
+            }
+        </script>
+    </body>
+</html>
